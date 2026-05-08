@@ -1,0 +1,27 @@
+INPUT 21 x 1  (dice: (1, 2, 2, 3, 6), rolls left: 1, scoreboard: (0, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0))
+
+                                                -
+                                            NEURAL NET HERE
+                                                -
+
+OUTPUT 47 x 1 | ('reroll', array([0, 0, 0, 0, 0])) | ('reroll', array([1, 0, 0, 0, 0])) | ('reroll', array([1, 1, 0, 0, 0])) ..... ('score', 'ones') | ('score', 'twos') | ('score', 'threes')
+              |             -2.586                 |               34.2335              |               7.4839               .....       15.2784     |      32.359       |        0.3927
+
+
+
+
+
+Epsilon:
+epsilon = 1.0 --> 100% todennäköisyys ottaa satunnainen aktio
+epsilon = 0.50 --> 50% todennäköisyys ottaa satunnainen aktio
+epsilon = 0.05 --> 5% todennäköisyys ottaa satunnainen aktio
+
+
+
+Training Looppi:
+1. Agentti saa pelin tilan
+2. Neuroverkko forward pass --> Q arvot ennustaa mikä aktio olisi hyvä ottaa jotta saan korkean scoren pelissä
+3. Ota kyseinen aktio (jos et ottanut satunnaista aktiota)
+4. Peli antaa scoren kyseiselle aktiolle
+5. Vertaa ennustusta ja todellista saatua pisteytystä (bellman equation) --> Korjaa neuroverkon painoja jotta se on tarkempi seuraavalla kerralla
+

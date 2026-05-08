@@ -1,5 +1,4 @@
 from algorithms.q_learning import Qlearn
-from  algorithms.random_pick import RandomPick
 from game.yatzy import Yatzy
 from game.stats import Stats
 
