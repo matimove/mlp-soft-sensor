@@ -80,31 +80,27 @@ class Yatzy:
             if self.rolls_left < 0:
                 raise ValueError('rolls_left went negative!')
             
-            old_dice = self.dice.display()
-
-         
             lock_mask = action[1]
             self.dice.lock(lock_mask)
-            self.dice.reroll()
+            
 
         elif action[0] == "score":
             placement = action[1]
             self.scoreboard.place_score(self.dice, placement)
             self.dice.lock([0,0,0,0,0])
-            self.dice.reroll()
             self.rolls_left = 2
-            old_dice = self.dice.display()
+        
+        self.generate_reward(action)
 
-        self.generate_reward(action, old_dice)
+        self.dice.reroll()
         
         self.check_if_game_over()
 
-        #Is bellman working correctly at the end of the game?
         self.next_state = (tuple(self.dice.display()), self.rolls_left, tuple(self.scoreboard.get_scoreboard_mask()))
 
         return self.next_state, self.reward, self.done, self.final_score, self.info
 
-    def generate_reward(self, action, old_dice):
+    def generate_reward(self, action):
         
         """
         Generate a reward for the agent given their action
@@ -121,48 +117,20 @@ class Yatzy:
 
         if action[0] == "score":
             
-            self.reward += self.scoreboard.place_score(self.dice, action[1]) / 10
+            self.reward += self.scoreboard.place_score(self.dice, action[1]) #/ 10
 
             if self.reward == 0:
                 self.reward = -1
 
-        self.reward += 0.1 * (self.dice_strength(self.dice.display()) - self.dice_strength(old_dice))
+            bonus_status, upper_sum, bonus_points = self.scoreboard.get_upper_sum()
 
-        bonus_status, upper_sum, bonus_points = self.scoreboard.get_upper_sum()
+            self.reward += (upper_sum - self.upper_sum) #* 0.2
 
-        self.reward += (upper_sum - self.upper_sum) * 0.1
+            self.upper_sum = upper_sum
 
-        self.upper_sum = upper_sum
+            self.reward += bonus_points
 
-        self.reward += bonus_points
-
-
-    def dice_strength(self, dice):
-
-        """
-        heuristic to score dice strength
-
-        Args:
-            dice: current dice
-
-        Returns:
-            score: value of how strong the dice are
-        """  
-
-        dice_counts = self.dice_to_dice_counts(dice)
-
-        score = 0
-
-        max_count = max(dice_counts)
-        score += max_count * 5
-
-        for i, count in enumerate(dice_counts):
-            value = i + 1
-            score += count * value
-
-        return score
-
-
+        
     def dice_to_dice_counts(self, dice):
         """
         Counts how many of each value of dice there are
@@ -187,7 +155,7 @@ class Yatzy:
         if sum(scoreboard_mask) == len(scoreboard_mask):
             self.done = True
             self.final_score = self.scoreboard.score_game()
-            self.reward += self.final_score[0] * 0.5
+            #self.reward += self.final_score[0] * 0.5
             self.info = 0
             
 

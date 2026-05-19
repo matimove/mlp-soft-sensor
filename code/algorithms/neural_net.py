@@ -23,8 +23,8 @@ class NN:
 
     def __init__(self):
         self.net = {}
-        self.gamma = 0.95
-        self.lr = 0.01
+        self.gamma = 0.99
+        self.lr = 1e-3
         self.epsilon = 1
         self.epsilon_decay = 0.999
         self.min_epsilon = 0.05
@@ -75,7 +75,6 @@ class NN:
         mask = np.full_like(logits, -np.inf)
         mask[actions_index_list] = logits[actions_index_list]
 
-        
         if np.random.rand() < self.epsilon:
             action_index = np.random.choice(actions_index_list)
         else:
@@ -108,6 +107,24 @@ class NN:
         dW1, db1, dW2, db2, dW3, db3 = self.backward_pass(X, A1, A2, A3, action, reward, next_state)
 
         self.update_weights(dW1, db1, dW2, db2, dW3, db3)
+
+    def update_batch(self, batch):
+
+        states, actions, rewards, next_states = batch
+
+        for i in range(len(states)):
+
+            state = states[i]
+            action = actions[i]
+            reward = rewards[i]
+            next_state = next_states[i]
+
+            self.update(
+                state,
+                action,
+                reward,
+                next_state
+            )
 
 
     def state_to_input(self, state):
@@ -255,8 +272,6 @@ class NN:
         A2 = self.relu(self.net["W2"] @ A1 + self.net["b2"])
         A3 = self.net["W3"] @ A2 + self.net["b3"]
 
-        A3 = np.clip(A3, -100, 100)
-
         return A1,A2,A3
     
 
@@ -277,7 +292,6 @@ class NN:
         A2 = self.relu(self.target_net["W2"] @ A1 + self.target_net["b2"])
         A3 = self.target_net["W3"] @ A2 + self.target_net["b3"]
 
-        #A3 = np.clip(A3, -100, 100)
 
         return A1,A2,A3
     
@@ -299,7 +313,7 @@ class NN:
         """  
         
         y = self.bellman(next_state, reward)
-        #print("SHAPE A3:" + np.shape(A3))
+       
         result = np.zeros_like(A3)
         result[action_index] = A3[action_index] - y
 
@@ -340,7 +354,8 @@ class NN:
 
         target = reward + self.gamma * next_Q_max
 
-        #print(target)
+        if all(x == 1 for x in next_state[2]):
+            target = reward
 
         return target
 

@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Scoreboard:
 
     """
@@ -11,6 +12,7 @@ class Scoreboard:
 
     def __init__(self):
         self.scoreboard = None
+        self.bonus_achieved = False
     
     def initialize(self):
 
@@ -37,11 +39,7 @@ class Scoreboard:
                            "chance": None,
                            "yatzy": None,
                            }
-
-        #self.categories = ["ones", "twos", "threes", "fours", "fives", "sixes",
-        #    "one_pair", "two_pairs", "three_of_a_kind", "four_of_a_kind",
-        #    "small_straight", "large_straight",
-        #    "full_house", "chance", "yatzy"]
+        self.bonus_achieved = False
     
     def return_scoreboard(self):
         """
@@ -78,14 +76,14 @@ class Scoreboard:
         if complete and upper_sum >= 63 and not self.bonus_achieved:
             print("BONUS ACHIEVED!")
             self.bonus_achieved = True
-            bonus_score += 100
+            bonus_score += 50
 
         return (complete, upper_sum, bonus_score)
     
     def score_game(self):
 
         """
-        Calculates the final score when scoreboard is full.
+        Calculates the final score when scoreboard is full and game has ended.
 
         """  
     
@@ -128,9 +126,11 @@ class Scoreboard:
         Returns:
             Score achieved for the category
         """  
-        
-        self.scoreboard[category_name] = self.score_dice(dice.display(), category_name)
-        return self.score_dice(dice.display(), category_name)
+        score_achieved = self.score_dice(dice.display(), category_name)
+
+        self.scoreboard[category_name] = score_achieved
+
+        return score_achieved
            
     def count_dice(self, dice):
 
@@ -247,3 +247,7 @@ class Scoreboard:
         
         if pick =='yatzy':
             return 50 if np.all(dice == dice[0]) else 0
+        
+
+
+    

@@ -1,7 +1,7 @@
 from algorithms.q_learning import Qlearn
 from  algorithms.neural_net import NN
 from game.yatzy import Yatzy
-from game.stats import Stats
+from algorithms.replaybuffer import Buffer
 
 #---------------------#
 agent = NN()
@@ -9,9 +9,12 @@ agent.initialize()
 #---------------------#
 env = Yatzy()
 #---------------------#
-stats = Stats()
+# How many games to train the agent on
+episodes = 100_000
 #---------------------#
-episodes = 1
+# Determine size of replay buffer and batch size that is sampleded during each turn
+buffer = Buffer(capacity=100_000)
+batch_size =  8
 #---------------------#
 scores = []
 bonuses = []
@@ -22,17 +25,21 @@ for episode in range(episodes):
 
     done = False
 
+    turns = 0
+
     while True:
 
+        turns += 1
+
         action = agent.choose_action(state)
-        print("State: ")
-        print(state)
-        print("Action: ")
-        print(action)
 
         next_state, reward, done, final_score, info = env.step(action)
         
-        agent.update(state, action, reward, next_state)
+        buffer.push(state, action, reward, next_state)
+
+        if len(buffer) >= 5000:
+            batch = buffer.sample(batch_size)
+            agent.update_batch(batch)
 
         state = next_state
 
