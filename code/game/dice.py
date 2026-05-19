@@ -24,14 +24,14 @@ class Dice:
         for i in range(5):
             if self.lock_list[i] == 0:
                 self.dice[i] = random.randint(1,6)
-        self.dice = np.sort(self.dice)
+        #self.dice = np.sort(self.dice)
 
     def initialize(self):
         """
         Initalizes dice and lock_list between rounds
         """  
         self.dice = np.random.randint(1, 7, size=5)
-        self.dice = np.sort(self.dice)
+        #self.dice = np.sort(self.dice)
         self.lock_list = np.zeros(5)
 
     def display(self):
