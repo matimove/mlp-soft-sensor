@@ -3,6 +3,8 @@ import random
 import itertools
 
 
+"This is the implementation of Q table agent that is currently not used"
+
 class Qlearn:
     def __init__(self):
         self.Q_table = {}

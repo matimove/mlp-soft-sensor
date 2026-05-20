@@ -8,7 +8,7 @@ def test_initialization():
     assert all(v is None for v in sb.scoreboard.values())
     assert sb.bonus_achieved is False
 
-def test_completing_upper_bonus():
+def test_upper_sum_no_bonus():
     sb = Scoreboard()
     sb.initialize()
 
@@ -23,7 +23,7 @@ def test_completing_upper_bonus():
     assert total==21
     assert bonus==0
 
-def test_place_score_basic():
+def test_place_score():
     sb = Scoreboard()
     sb.initialize()
 

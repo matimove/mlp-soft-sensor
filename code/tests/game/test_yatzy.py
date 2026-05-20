@@ -33,7 +33,7 @@ def test_scoring_action():
     assert np.isscalar(reward)
 
 
-def test_game_over_when_scoreboard_full():
+def test_game_over_scoreboard_full():
     game = Yatzy()
     game.reset()
 
