@@ -35,6 +35,7 @@ class NN:
             "small_straight", "large_straight",
             "full_house", "chance", "yatzy"
             ]
+        
         self.action_to_index = {}
         self.counter = 0
         self.target_net = {}
